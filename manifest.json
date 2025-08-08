@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Reader to Nostr",
+  "version": "1.1",
+  "description": "Extract reader mode content and post to Nostr",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "host_permissions": ["<all_urls>"]
+}
