@@ -23,9 +23,17 @@
     .main-content {
       flex: 1;
       max-width: none;
-      padding: 40px 60px;
+      padding: 40px;
       background: white;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 680px;
     }
 
     .sidebar {
@@ -192,7 +200,6 @@
       font-size: 18px;
       line-height: 1.7;
       color: #2c3e50;
-      max-width: 680px;
     }
 
     .article-content h1,
@@ -314,11 +321,12 @@
 
     .add-relay {
       display: flex;
+      flex-direction: column;
       gap: 8px;
     }
 
     .add-relay input {
-      flex: 1;
+      width: 100%;
       font-size: 12px;
       padding: 6px;
     }
@@ -326,6 +334,7 @@
     .add-relay button {
       padding: 6px 12px;
       font-size: 12px;
+      width: 100%;
     }
 
     .error-state {
@@ -358,7 +367,6 @@
       
       .article-content {
         font-size: 16px;
-        max-width: 100%;
       }
       
       .article-meta h2 {
@@ -369,38 +377,55 @@
 </head>
 <body>
   <div class="main-content">
-    <div class="header">
-      <h1>Reader to Nostr</h1>
-    </div>
-
-    <div id="loading" class="loading">
-      <h3>Extracting article content</h3>
-    </div>
-
-    <div id="error-state" class="error-state hidden">
-      <h3>Could not extract article</h3>
-      <p id="error-message"></p>
-    </div>
-
-    <div id="empty-state" class="empty-state hidden">
-      <h3>No content found</h3>
-      <p>This page doesn't seem to have readable article content.</p>
-    </div>
-
-    <div id="article-section" class="hidden">
-      <div class="article-meta">
-        <h2 id="article-title"></h2>
-        <div id="article-byline" class="byline"></div>
-        <div id="article-url" class="url"></div>
+    <div class="content-wrapper">
+      <div class="header">
+        <h1>Reader to Nostr</h1>
       </div>
-      
-      <div id="article-content" class="article-content"></div>
+
+      <div id="loading" class="loading">
+        <h3>Extracting article content</h3>
+      </div>
+
+      <div id="error-state" class="error-state hidden">
+        <h3>Could not extract article</h3>
+        <p id="error-message"></p>
+      </div>
+
+      <div id="empty-state" class="empty-state hidden">
+        <h3>No content found</h3>
+        <p>This page doesn't seem to have readable article content.</p>
+      </div>
+
+      <div id="article-section" class="hidden">
+        <div class="article-meta">
+          <h2 id="article-title"></h2>
+          <div id="article-byline" class="byline"></div>
+          <div id="article-url" class="url"></div>
+        </div>
+        
+        <div id="article-content" class="article-content"></div>
+      </div>
     </div>
   </div>
 
   <div class="sidebar">
     <h2>Nostr Tools</h2>
     
+    <div class="sidebar-section">
+      <h3>Post to Nostr</h3>
+      <button id="post-btn" class="btn btn-success" disabled>Post to Nostr</button>
+      <div id="post-status" class="success-message"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Nostr Relays</h3>
+      <ul id="relay-list" class="relay-list"></ul>
+      <div class="add-relay">
+        <input type="text" id="new-relay" class="form-control" placeholder="wss://relay.example.com" />
+        <button id="add-relay-btn" class="btn btn-primary">Add</button>
+      </div>
+    </div>
+
     <div id="login-section" class="sidebar-section">
       <div id="login-form">
         <h3>Login with nsec</h3>
@@ -416,21 +441,6 @@
         <h3>✓ Logged in</h3>
         <p id="pubkey-display" style="font-size: 12px; word-break: break-all; margin: 10px 0;"></p>
         <button id="logout-btn" class="btn btn-secondary">Logout</button>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <h3>Post to Nostr</h3>
-      <button id="post-btn" class="btn btn-success" disabled>Post to Nostr</button>
-      <div id="post-status" class="success-message"></div>
-    </div>
-
-    <div class="sidebar-section">
-      <h3>Nostr Relays</h3>
-      <ul id="relay-list" class="relay-list"></ul>
-      <div class="add-relay">
-        <input type="text" id="new-relay" class="form-control" placeholder="wss://relay.example.com" />
-        <button id="add-relay-btn" class="btn btn-primary">Add</button>
       </div>
     </div>
   </div>
