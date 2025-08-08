@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "nostr-tools": "^2.16.2"
+    "nostr-tools": "^2.16.2",
+    "turndown": "^7.2.0"
   }
 }

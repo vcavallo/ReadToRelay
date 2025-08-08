@@ -229,6 +229,39 @@
     postStatus.textContent = "";
 
     try {
+      // Convert HTML content to Markdown
+      let content = "";
+      if (currentArticle.content) {
+        // Initialize Turndown service for HTML to Markdown conversion
+        const turndownService = new TurndownService({
+          headingStyle: 'atx',
+          bulletListMarker: '-',
+          codeBlockStyle: 'fenced',
+          fence: '```',
+          emDelimiter: '*',
+          strongDelimiter: '**',
+          linkStyle: 'inlined',
+          linkReferenceStyle: 'full'
+        });
+
+        // Configure Turndown to handle common elements better
+        turndownService.addRule('removeEmptyParagraphs', {
+          filter: function (node) {
+            return node.nodeName === 'P' && /^\s*$/.test(node.textContent);
+          },
+          replacement: function () {
+            return '';
+          }
+        });
+
+        // Convert HTML to Markdown
+        content = turndownService.turndown(currentArticle.content);
+        console.log("Converted HTML to Markdown:", content);
+      } else {
+        // Fallback to text content if no HTML
+        content = currentArticle.textContent || "";
+      }
+
       // Create Nostr event
       const event = {
         kind: 30023, // Long-form content
@@ -236,9 +269,11 @@
         tags: [
           ["title", currentArticle.title || "Untitled"],
           ["url", currentArticle.url || ""],
-          ["published_at", String(Math.floor(Date.now() / 1000))]
+          ["published_at", String(Math.floor(Date.now() / 1000))],
+          ["t", "article"], // Tag as article
+          ["t", "reader"] // Tag as reader content
         ],
-        content: currentArticle.content || currentArticle.textContent || ""
+        content: content
       };
 
       // Add byline if available
