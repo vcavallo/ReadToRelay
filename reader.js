@@ -306,24 +306,26 @@
       // Add metadata header to the content
       const metadata = [
         `**Original source:** [${currentArticle.url || 'Unknown'}](${currentArticle.url || ''})`,
-        `**Shared with:** Reader to Nostr`,
+        `**Shared with:** [ReadToRelay browser extension](https://github.com/vcavallo/ReadToRelay)`,
         ``,
         `---`,
         ``
-      ].join('\n');
+      ].join('\n\n');
 
       content = metadata + content;
 
       // Create Nostr event
+      const timestamp = Math.floor(Date.now() / 1000);
       const event = {
         kind: 30023, // Long-form content
-        created_at: Math.floor(Date.now() / 1000),
+        created_at: timestamp,
         tags: [
+          ["d", `${currentArticle.url}-${timestamp}`], // Unique identifier to prevent replacement
           ["title", currentArticle.title || "Untitled"],
           ["url", currentArticle.url || ""],
-          ["published_at", String(Math.floor(Date.now() / 1000))],
+          ["published_at", String(timestamp)],
           ["t", "web-archive"],
-          ["t", "wayback"],
+          ["t", "budget-wayback-machine"],
           ["t", "ReadToRelay"]
         ],
         content: content
