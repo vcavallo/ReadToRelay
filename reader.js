@@ -324,6 +324,7 @@
           ["published_at", String(Math.floor(Date.now() / 1000))],
           ["t", "web-archive"],
           ["t", "wayback"]
+          ["t", "ReadToRelay"]
         ],
         content: content
       };
