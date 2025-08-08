@@ -1,5 +1,7 @@
 # ReadToRelay
 
+https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192
+
 A Chrome extension that extracts readable content from web pages and posts it to Nostr, in Markdown, as a Kind 30023 long-form article.
 
 **_Disclaimer: This app was vibe-coded pretty quickly. It is safe with nsecs, but the code is kind of a mess. It does what it claims to, though._**
