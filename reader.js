@@ -33,6 +33,10 @@
   const newRelayInput = document.getElementById("new-relay");
   const addRelayBtn = document.getElementById("add-relay-btn");
   
+  const tagList = document.getElementById("tag-list");
+  const newTagInput = document.getElementById("new-tag");
+  const addTagBtn = document.getElementById("add-tag-btn");
+  
   const themeToggle = document.getElementById("theme-toggle");
   const fontDecrease = document.getElementById("font-decrease");
   const fontIncrease = document.getElementById("font-increase");
@@ -314,6 +318,10 @@
 
       content = metadata + content;
 
+      // Get custom tags
+      const tagData = await chrome.storage.local.get("customTags");
+      const customTags = tagData.customTags || getDefaultTags();
+
       // Create Nostr event
       const timestamp = Math.floor(Date.now() / 1000);
       const event = {
@@ -324,9 +332,7 @@
           ["title", currentArticle.title || "Untitled"],
           ["url", currentArticle.url || ""],
           ["published_at", String(timestamp)],
-          ["t", "web-archive"],
-          ["t", "budget-wayback-machine"],
-          ["t", "ReadToRelay"]
+          ...customTags.map(tag => ["t", tag]) // Add custom tags
         ],
         content: content
       };
@@ -378,13 +384,19 @@
       const failedResults = results.filter(r => r.status === 'rejected');
       
       console.log(`Posted to ${successful}/${relays.length} relays`);
-      postStatus.textContent = `Posted to ${successful}/${relays.length} relays successfully!`;
+      
+      // Show event ID and success message
+      const eventId = signedEvent.id;
+      postStatus.innerHTML = `Posted to ${successful}/${relays.length} relays successfully!<br><br>Event: <a href="https://njump.me/${eventId}" target="_blank" style="color: var(--accent-color); text-decoration: underline;">njump.me</a>`;
       
       if (failedResults.length > 0) {
         const failedRelays = failedResults.map(r => r.reason?.url || 'Unknown relay');
         console.warn("Failed relays:", failedResults);
-        postStatus.textContent += `\n\nFailed relays:\n${failedRelays.join('\n')}`;
+        postStatus.innerHTML += `<br><br>Failed relays:<br>${failedRelays.join('<br>')}`;
       }
+
+      // Reset tags to defaults after successful post
+      await resetTagsToDefault();
 
     } catch (error) {
       console.error("Error posting to Nostr:", error);
@@ -404,6 +416,15 @@
       "wss://relay.primal.net",
       "wss://nos.lol",
       "wss://nostr.mom"
+    ];
+  }
+
+  // Tag management
+  function getDefaultTags() {
+    return [
+      "web-archive",
+      "budget-wayback-machine",
+      "ReadToRelay"
     ];
   }
 
@@ -429,11 +450,47 @@
     });
   }
 
+  function renderTags(tags) {
+    tagList.innerHTML = "";
+    tags.forEach((tag, i) => {
+      const li = document.createElement("li");
+      
+      const span = document.createElement("span");
+      span.textContent = tag;
+      li.appendChild(span);
+      
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Remove";
+      delBtn.onclick = async () => {
+        tags.splice(i, 1);
+        await chrome.storage.local.set({ customTags: tags });
+        renderTags(tags);
+      };
+      li.appendChild(delBtn);
+      
+      tagList.appendChild(li);
+    });
+  }
+
   async function loadRelays() {
     const data = await chrome.storage.local.get("relays");
     const relays = data.relays || getDefaultRelays();
     renderRelays(relays);
     return relays;
+  }
+
+  async function loadTags() {
+    const data = await chrome.storage.local.get("customTags");
+    const tags = data.customTags || getDefaultTags();
+    renderTags(tags);
+    return tags;
+  }
+
+  async function resetTagsToDefault() {
+    const defaultTags = getDefaultTags();
+    await chrome.storage.local.set({ customTags: defaultTags });
+    renderTags(defaultTags);
+    return defaultTags;
   }
 
   addRelayBtn.addEventListener("click", async () => {
@@ -466,6 +523,31 @@
     }
   });
 
+  addTagBtn.addEventListener("click", async () => {
+    const tag = newTagInput.value.trim();
+    if (!tag) return;
+    
+    const data = await chrome.storage.local.get("customTags");
+    const tags = data.customTags || getDefaultTags();
+    
+    if (tags.includes(tag)) {
+      alert("Tag already added");
+      return;
+    }
+
+    tags.push(tag);
+    await chrome.storage.local.set({ customTags: tags });
+    renderTags(tags);
+    newTagInput.value = "";
+  });
+
+  // Allow Enter key to add tag
+  newTagInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addTagBtn.click();
+    }
+  });
+
   // Initialize everything
   showLoadingState();
   
@@ -475,8 +557,9 @@
   // Load stored authentication
   await loadStoredKey();
   
-  // Load relays
+  // Load relays and tags
   await loadRelays();
+  await loadTags();
   
   // Load and display article
   await loadArticle();
