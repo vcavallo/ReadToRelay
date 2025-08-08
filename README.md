@@ -1,17 +1,20 @@
 # ReadToRelay
 
-https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192
+A Chrome extension that extracts readable content from web pages and posts it to Nostr as Markdown.
 
-A Chrome extension that extracts readable content from web pages and posts it to Nostr, in Markdown, as a Kind 30023 long-form article.
-
-**_Disclaimer: This app was vibe-coded pretty quickly. It is safe with nsecs, but the code is kind of a mess. It does what it claims to, though._**
+**_Disclaimer: This app was vibe-coded pretty quickly. It is carefule with your nsec, but the repo itself is kind of disorganized. Functionally, it does what it claims to, though!_**
 
 ## What it does
 
-1. **Click the extension icon** on any article/blog post
+1. **Click the extension icon** on any web site - wiki pages, blog posts, "paywalled" news articles...
 2. **Read the content** in a clean, distraction-free interface
 3. **Login with your nsec** (stored locally only)
-4. **Post to Nostr** as formatted Markdown with source attribution
+4. **Post to Nostr** as formatted Markdown
+
+https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192  
+
+_The extension posts the notes to **your npub**. The "Archiver" npub above was just for that demonstration_.
+
 
 ## Installation
 
@@ -37,6 +40,6 @@ You can verify this by checking the code:
 - Clean reading interface with dark mode
 - Adjustable font size
 - HTML to Markdown conversion
-- Custom relay management
-- Source attribution on all posts
+- Relay management with "public" defaults
 
+![icon](icon-with-bg.jpg)
