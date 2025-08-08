@@ -1,14 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Reader to Nostr",
-  "version": "1.1",
-  "description": "Extract reader mode content and post to Nostr",
+  "name": "ReadToRelay",
+  "version": "1.0",
+  "description": "Extract reader mode content and post to Nostr as longform markdown",
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "background.js"
   },
+  "homepage_url": "https://github.com/vcavallo/ReadToRelay",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_icon": {
+      "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
