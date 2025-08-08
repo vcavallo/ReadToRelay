@@ -13,6 +13,8 @@ A Chrome extension that extracts readable content from web pages and posts it to
 
 ## Installation
 
+_For now, you have to manually install this in Chrome/Brave/etc. I'll package it up as an official extension some day_.
+
 1. Download or clone this repository
 2. Open Chrome and go to `chrome://extensions/`
 3. Enable "Developer mode" (top right toggle)

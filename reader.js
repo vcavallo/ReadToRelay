@@ -323,7 +323,7 @@
           ["url", currentArticle.url || ""],
           ["published_at", String(Math.floor(Date.now() / 1000))],
           ["t", "web-archive"],
-          ["t", "wayback"]
+          ["t", "wayback"],
           ["t", "ReadToRelay"]
         ],
         content: content
@@ -373,14 +373,15 @@
 
       const results = await Promise.allSettled(promises);
       const successful = results.filter(r => r.status === 'fulfilled').length;
-      const failed = results.filter(r => r.status === 'rejected').length;
+      const failedResults = results.filter(r => r.status === 'rejected');
       
       console.log(`Posted to ${successful}/${relays.length} relays`);
       postStatus.textContent = `Posted to ${successful}/${relays.length} relays successfully!`;
       
-      if (failed > 0) {
-        console.warn("Failed relays:", results.filter(r => r.status === 'rejected'));
-        postStatus.textContent += ` (${failed} failed)`;
+      if (failedResults.length > 0) {
+        const failedRelays = failedResults.map(r => r.reason?.url || 'Unknown relay');
+        console.warn("Failed relays:", failedResults);
+        postStatus.textContent += `\n\nFailed relays:\n${failedRelays.join('\n')}`;
       }
 
     } catch (error) {
@@ -399,7 +400,7 @@
       "wss://relay.damus.io",
       "wss://nostr.wine",
       "wss://relay.primal.net",
-      "wss://nostr.lol",
+      "wss://nos.lol",
       "wss://nostr.mom"
     ];
   }
