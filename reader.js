@@ -3,6 +3,8 @@
   let secretKey = null;
   let publicKeyHex = null;
   let currentArticle = null;
+  let currentTheme = 'light';
+  let currentFontSize = 18;
 
   // DOM elements
   const loginForm = document.getElementById("login-form");
@@ -30,6 +32,11 @@
   const relayList = document.getElementById("relay-list");
   const newRelayInput = document.getElementById("new-relay");
   const addRelayBtn = document.getElementById("add-relay-btn");
+  
+  const themeToggle = document.getElementById("theme-toggle");
+  const fontDecrease = document.getElementById("font-decrease");
+  const fontIncrease = document.getElementById("font-increase");
+  const fontSizeDisplay = document.getElementById("font-size-display");
 
   // Authentication functions
   async function loadStoredKey() {
@@ -120,6 +127,40 @@
       loginBtn.click();
     }
   });
+
+  // Theme and font size functions
+  async function loadPreferences() {
+    const data = await chrome.storage.local.get(['theme', 'fontSize']);
+    currentTheme = data.theme || 'light';
+    currentFontSize = data.fontSize || 18;
+    
+    // Apply theme
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    
+    // Apply font size
+    document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+    fontSizeDisplay.textContent = currentFontSize + 'px';
+  }
+
+  async function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    await chrome.storage.local.set({ theme: currentTheme });
+  }
+
+  async function changeFontSize(delta) {
+    currentFontSize = Math.max(12, Math.min(28, currentFontSize + delta));
+    document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+    fontSizeDisplay.textContent = currentFontSize + 'px';
+    await chrome.storage.local.set({ fontSize: currentFontSize });
+  }
+
+  // Theme and font size event listeners
+  themeToggle.addEventListener("click", toggleTheme);
+  fontIncrease.addEventListener("click", () => changeFontSize(2));
+  fontDecrease.addEventListener("click", () => changeFontSize(-2));
 
   // Article loading
   async function loadArticle() {
@@ -423,6 +464,9 @@
 
   // Initialize everything
   showLoadingState();
+  
+  // Load preferences first
+  await loadPreferences();
   
   // Load stored authentication
   await loadStoredKey();
