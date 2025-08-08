@@ -262,6 +262,17 @@
         content = currentArticle.textContent || "";
       }
 
+      // Add metadata header to the content
+      const metadata = [
+        `**Original source:** [${currentArticle.url || 'Unknown'}](${currentArticle.url || ''})`,
+        `**Shared with:** Reader to Nostr`,
+        ``,
+        `---`,
+        ``
+      ].join('\n');
+
+      content = metadata + content;
+
       // Create Nostr event
       const event = {
         kind: 30023, // Long-form content
@@ -270,8 +281,8 @@
           ["title", currentArticle.title || "Untitled"],
           ["url", currentArticle.url || ""],
           ["published_at", String(Math.floor(Date.now() / 1000))],
-          ["t", "article"], // Tag as article
-          ["t", "reader"] // Tag as reader content
+          ["t", "web-archive"],
+          ["t", "wayback"]
         ],
         content: content
       };
