@@ -1,22 +1,31 @@
 # ReadToRelay
 
-A Chrome extension that extracts readable content from web pages and posts it to Nostr as Markdown.
+A Chrome extension **and website** that extracts readable content from web pages and posts it to Nostr as Markdown.
 
 **_Disclaimer: This app was vibe-coded pretty quickly. It is carefule with your nsec, but the repo itself is kind of disorganized. Functionally, it does what it claims to, though!_**
 
 ## What it does
 
+### Browser Extension
 1. **Click the extension icon** on any web site - wiki pages, blog posts, "paywalled" news articles...
 2. **Read the content** in a clean, distraction-free interface
 3. **Login with your nsec** (stored locally only)
 4. **Post to Nostr** as formatted Markdown
 
-https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192  
+### Website
+1. **Enter any URL** on the ReadToRelay website
+2. **Read the extracted content** in a clean interface
+3. **Login with your nsec** (stored locally in your browser)
+4. **Post to Nostr** as formatted Markdown
 
-_The extension posts the notes to **your npub**. The "Archiver" npub above was just for that demonstration_.
+https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192
+
+_The extension/website posts the notes to **your npub**. The "Archiver" npub above was just for that demonstration_.
 
 
 ## Installation
+
+### Browser Extension
 
 _For now, you have to manually install this in Chrome/Brave/etc. I'll package it up as an official extension some day_.
 
@@ -26,14 +35,60 @@ _For now, you have to manually install this in Chrome/Brave/etc. I'll package it
 4. Click "Load unpacked" and select the extension folder
 5. The extension icon will appear in your toolbar
 
+### Website
+
+1. Open the `website/index.html` file in your browser, or
+2. Host the `website/` folder on any web server (GitHub Pages, Netlify, etc.)
+
+The website uses:
+- CDN-hosted libraries (nostr-tools, turndown, readability)
+- A CORS proxy (allorigins.win) to fetch pages from other domains
+- LocalStorage for your nsec, preferences, and relay settings
+
+#### URL Parameter / Bookmarklet Usage
+
+You can pass URLs directly to ReadToRelay by appending them to the URL:
+
+```
+file:///path/to/website/index.html#url=https://example.com/article
+```
+
+Or if hosted:
+```
+https://yoursite.com/#url=https://example.com/article
+```
+
+This works great as a **bookmarklet**! Create a bookmark with this JavaScript:
+
+```javascript
+javascript:(function(){window.open('file:///path/to/ReadToRelay/website/index.html#url='+encodeURIComponent(window.location.href));})();
+```
+
+Replace `file:///path/to/ReadToRelay/website/index.html` with your actual path or hosted URL.
+
+#### Mobile Share Target (PWA)
+
+When hosted on a server with HTTPS:
+
+1. Open the website on your mobile device
+2. **"Add to Home Screen"** from your browser menu
+3. Now when you **"Share" any webpage** from your browser or apps, you'll see **ReadToRelay** as a share option!
+4. Sharing to ReadToRelay will automatically extract and load the article
+
+**Note:** The share target feature requires:
+- HTTPS hosting (not available when opening index.html locally)
+- Installing the PWA to your home screen
+- Modern mobile browser (Chrome, Safari, Edge, etc.)
+
 ## Privacy
 
-**Your nsec is never sent anywhere.** It's stored locally in Chrome's extension storage and only used to sign events on your device.
+**Your nsec is never sent anywhere.** It's stored locally (extension storage or browser localStorage) and only used to sign events on your device.
 
 You can verify this by checking the code:
-- **Storage**: `reader.js` lines 24-35 (saves to `chrome.storage.local`)
-- **Signing**: `reader.js` lines 285-286 (uses local key with `finalizeEvent`)
-- **No network calls** except to Nostr relays for posting
+- **Extension Storage**: `reader.js` lines 24-35 (saves to `chrome.storage.local`)
+- **Website Storage**: `website/app.js` (saves to `localStorage`)
+- **Signing**: Uses local key with `NostrTools.finalizeEvent`
+- **No network calls** except to Nostr relays for posting (and the CORS proxy for the website)
 
 ## Features
 

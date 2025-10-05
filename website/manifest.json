@@ -1,0 +1,37 @@
+{
+  "name": "ReadToRelay",
+  "short_name": "ReadToRelay",
+  "description": "Convert web pages to Nostr longform content",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#007bff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "../icons/icon16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "../icons/icon48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "../icons/icon128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
