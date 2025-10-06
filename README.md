@@ -1,8 +1,14 @@
 # ReadToRelay
 
+![icon](icons/icon128.png)
+
 A Chrome extension **and website** that extracts readable content from web pages and posts it to Nostr as Markdown.
 
-**_Disclaimer: This app was vibe-coded pretty quickly. It is carefule with your nsec, but the repo itself is kind of disorganized. Functionally, it does what it claims to, though!_**
+https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192
+
+_The extension/website posts the notes to **your npub**. The "Archiver" npub above was just for that demonstration_.
+
+**_Disclaimer: This app was vibe-coded pretty quickly. It is careful with your nsec, but the repo itself is kind of disorganized. Functionally, it does what it claims to, though!_**
 
 ## What it does
 
@@ -18,22 +24,24 @@ A Chrome extension **and website** that extracts readable content from web pages
 3. **Login with your nsec** (stored locally in your browser)
 4. **Post to Nostr** as formatted Markdown
 
-https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192
-
-_The extension/website posts the notes to **your npub**. The "Archiver" npub above was just for that demonstration_.
+**Note: the website will likely not work to extract most sites and won't have your auth to accounts for paid platforms.** We probably shouldn't include it at all, actually.
 
 
 ## Installation
 
-### Browser Extension
+### Browser Extension - Chrome/Brave
 
-_For now, you have to manually install this in Chrome/Brave/etc. I'll package it up as an official extension some day_.
+_For now, you have to manually install this in Chrome/Brave/etc. We're currently awaiting Chrome Web Store approval_.
 
 1. Download or clone this repository
 2. Open Chrome and go to `chrome://extensions/`
 3. Enable "Developer mode" (top right toggle)
 4. Click "Load unpacked" and select the extension folder
 5. The extension icon will appear in your toolbar
+
+### Browser Extension - Firefox
+
+_Coming soon_.
 
 ### Website
 
@@ -67,6 +75,8 @@ javascript:(function(){window.open('file:///path/to/ReadToRelay/website/index.ht
 Replace `file:///path/to/ReadToRelay/website/index.html` with your actual path or hosted URL.
 
 #### Mobile Share Target (PWA)
+
+Like the website note above, as a PWA, it won't be logged in to any sites for which you have a privileged account, removing a lot of the utility of the tool...
 
 When hosted on a server with HTTPS:
 
