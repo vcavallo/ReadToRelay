@@ -1,6 +1,6 @@
 # ReadToRelay
 
-![icon](icons/icon128.png)
+![icon](icons/icon128-dark.png)
 
 A Chrome extension **and website** that extracts readable content from web pages and posts it to Nostr as Markdown.
 
