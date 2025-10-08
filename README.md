@@ -31,7 +31,9 @@ _The extension/website posts the notes to **your npub**. The "Archiver" npub abo
 
 ### Browser Extension - Chrome/Brave
 
-_For now, you have to manually install this in Chrome/Brave/etc. We're currently awaiting Chrome Web Store approval_.
+Find it on the [Chrome web store here](https://chromewebstore.google.com/detail/gfncdikmbmefjjbahjhgkodnhepikecj)
+
+Or install it manually (for fun or development purposes).
 
 1. Download or clone this repository
 2. Open Chrome and go to `chrome://extensions/`
