@@ -1,1 +1,6 @@
 .vercel
+dist/
+node_modules/
+
+# nix / direnv
+.direnv/
