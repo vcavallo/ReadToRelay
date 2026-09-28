@@ -1,12 +1,15 @@
-chrome.action.onClicked.addListener(async (tab) => {
+// Firefox only returns promises on the `browser` namespace; Chrome only defines `chrome`
+const ext = globalThis.browser ?? globalThis.chrome;
+
+ext.action.onClicked.addListener(async (tab) => {
   try {
     // Extract article content from current tab
-    await chrome.scripting.executeScript({
+    await ext.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['readability.js']
     });
 
-    const results = await chrome.scripting.executeScript({
+    const results = await ext.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
         try {
@@ -41,21 +44,21 @@ chrome.action.onClicked.addListener(async (tab) => {
     const articleData = results[0].result;
     
     // Store article data temporarily
-    await chrome.storage.local.set({ 
+    await ext.storage.local.set({ 
       currentArticle: articleData,
       extractedAt: Date.now()
     });
 
     // Open reader page
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('reader.html')
+    ext.tabs.create({
+      url: ext.runtime.getURL('reader.html')
     });
 
   } catch (error) {
     console.error('Failed to extract article:', error);
     
     // Still open reader page, it can show the error
-    await chrome.storage.local.set({ 
+    await ext.storage.local.set({ 
       currentArticle: {
         title: 'Error',
         content: '',
@@ -66,8 +69,8 @@ chrome.action.onClicked.addListener(async (tab) => {
       extractedAt: Date.now()
     });
 
-    chrome.tabs.create({
-      url: chrome.runtime.getURL('reader.html')
+    ext.tabs.create({
+      url: ext.runtime.getURL('reader.html')
     });
   }
 });

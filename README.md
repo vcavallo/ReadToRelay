@@ -2,7 +2,7 @@
 
 ![icon](icons/icon128-dark.png)
 
-A Chrome extension **and website** that extracts readable content from web pages and posts it to Nostr as Markdown.
+A browser extension (Chrome and Firefox) **and website** that extracts readable content from web pages and posts it to Nostr as Markdown.
 
 https://github.com/user-attachments/assets/08eea680-c6de-4d72-a6fe-b757fb997192
 
@@ -33,17 +33,62 @@ _The extension/website posts the notes to **your npub**. The "Archiver" npub abo
 
 Find it on the [Chrome web store here](https://chromewebstore.google.com/detail/gfncdikmbmefjjbahjhgkodnhepikecj)
 
-Or install it manually (for fun or development purposes).
+Or install it manually (for fun or development purposes):
 
 1. Download or clone this repository
-2. Open Chrome and go to `chrome://extensions/`
-3. Enable "Developer mode" (top right toggle)
-4. Click "Load unpacked" and select the extension folder
-5. The extension icon will appear in your toolbar
+2. Run `npm install && npm run build` (assembles `dist/chrome/` and `dist/firefox/`)
+3. Open Chrome and go to `chrome://extensions/`
+4. Enable "Developer mode" (top right toggle)
+5. Click "Load unpacked" and select the `dist/chrome/` folder
+6. The extension icon will appear in your toolbar
 
 ### Browser Extension - Firefox
 
-_Coming soon_.
+_Firefox Add-ons listing coming soon._
+
+Install it manually (temporary add-on, removed when Firefox restarts):
+
+1. Download or clone this repository
+2. Run `npm install && npm run build`
+3. Open Firefox and go to `about:debugging#/runtime/this-firefox`
+4. Click "Load Temporary Add-on…" and select `dist/firefox/manifest.json`
+5. The extension icon will appear in your toolbar (you may need to pin it from the puzzle-piece menu)
+
+Alternatively, `npx web-ext run --source-dir dist/firefox` launches a fresh Firefox profile with the extension pre-loaded.
+
+## Development
+
+The Chrome and Firefox builds share all their code; only the manifest differs:
+
+- `manifest.chrome.json` — uses a `background.service_worker`
+- `manifest.firefox.json` — uses `background.scripts` (Firefox MV3 doesn't support service workers) plus the `browser_specific_settings.gecko` block required by Mozilla
+
+Scripts:
+
+- `npm run build` — assembles `dist/chrome/` and `dist/firefox/`, each loadable unpacked
+- `npm run package` — builds, then zips both as `dist/readtorelay-<browser>-v<version>.zip` for store submission
+- `npm run lint:firefox` — runs Mozilla's `web-ext lint` against the Firefox build
+
+To bump the version, update it in **both** manifest files.
+
+### Publishing to the stores
+
+**Chrome Web Store:** upload `dist/readtorelay-chrome-v<version>.zip` at the [developer dashboard](https://chrome.google.com/webstore/devconsole).
+
+**Firefox Add-ons (AMO):**
+
+1. Run `npm run package` and `npm run lint:firefox` (must show 0 errors)
+2. Sign in at the [Add-on Developer Hub](https://addons.mozilla.org/developers/) (any Mozilla account works)
+3. Choose "Submit a New Add-on" → "On this site" (listed)
+4. Upload `dist/readtorelay-firefox-v<version>.zip`; AMO runs the same validator as `web-ext lint`
+5. When asked "Do you use minified, concatenated or machine-generated code?", answer **yes** — the extension vendors three libraries at the repo root. Upload a zip of this repo (without `node_modules/` or `dist/`) as the source package. Reviewers can reproduce all three files byte-for-byte with `npm ci && npm run vendor` (Node 22, network access needed for the readability download):
+   - `nostr-tools.js` — verbatim copy of `lib/nostr.bundle.js` from the `nostr-tools@2.16.2` npm package
+   - `turndown.js` — `lib/turndown.browser.umd.js` from `turndown@7.2.0`, wrapped as an IIFE global by `esbuild@0.28.1` (exact command in `scripts/vendor.js`)
+   - `readability.js` — verbatim copy of `Readability.js` from [mozilla/readability @ `a07e62c8`](https://github.com/mozilla/readability/blob/a07e62c8abfc64b06a28b48dfc76f4150796ed63/Readability.js)
+6. Fill in the listing (summary, description, screenshots, category, privacy policy — see the Privacy section below)
+7. Submit. The add-on is signed and published after automated review; human review may follow.
+
+Later versions are uploaded from the add-on's "Manage Status & Versions" page. The add-on ID is pinned in `manifest.firefox.json` (`browser_specific_settings.gecko.id`), so keep it unchanged between versions.
 
 ### Website
 
@@ -97,7 +142,7 @@ When hosted on a server with HTTPS:
 **Your nsec is never sent anywhere.** It's stored locally (extension storage or browser localStorage) and only used to sign events on your device.
 
 You can verify this by checking the code:
-- **Extension Storage**: `reader.js` lines 24-35 (saves to `chrome.storage.local`)
+- **Extension Storage**: `saveSecretKey()` in `reader.js` (saves to extension-local storage: `chrome.storage.local` / `browser.storage.local`)
 - **Website Storage**: `website/app.js` (saves to `localStorage`)
 - **Signing**: Uses local key with `NostrTools.finalizeEvent`
 - **No network calls** except to Nostr relays for posting (and the CORS proxy for the website)

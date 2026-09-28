@@ -1,4 +1,7 @@
 (async () => {
+  // Firefox only returns promises on the `browser` namespace; Chrome only defines `chrome`
+  const ext = globalThis.browser ?? globalThis.chrome;
+
   // State management
   let secretKey = null;
   let publicKeyHex = null;
@@ -44,29 +47,25 @@
 
   // Authentication functions
   async function loadStoredKey() {
-    return new Promise(resolve => {
-      chrome.storage.local.get("secretKey", res => {
-        if (res.secretKey) {
-          secretKey = new Uint8Array(res.secretKey);
-          publicKeyHex = window.NostrTools.getPublicKey(secretKey);
-          updateLoginUI(true);
-        }
-        resolve();
-      });
-    });
+    const res = await ext.storage.local.get("secretKey");
+    if (res.secretKey) {
+      secretKey = new Uint8Array(res.secretKey);
+      publicKeyHex = window.NostrTools.getPublicKey(secretKey);
+      updateLoginUI(true);
+    }
   }
 
   async function saveSecretKey(sk) {
     secretKey = sk;
     publicKeyHex = window.NostrTools.getPublicKey(sk);
-    await chrome.storage.local.set({ secretKey: Array.from(sk) });
+    await ext.storage.local.set({ secretKey: Array.from(sk) });
     updateLoginUI(true);
   }
 
   async function clearSecretKey() {
     secretKey = null;
     publicKeyHex = null;
-    await chrome.storage.local.remove("secretKey");
+    await ext.storage.local.remove("secretKey");
     updateLoginUI(false);
   }
 
@@ -134,7 +133,7 @@
 
   // Theme and font size functions
   async function loadPreferences() {
-    const data = await chrome.storage.local.get(['theme', 'fontSize']);
+    const data = await ext.storage.local.get(['theme', 'fontSize']);
     currentTheme = data.theme || 'light';
     currentFontSize = data.fontSize || 18;
     
@@ -151,14 +150,14 @@
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeToggle.textContent = currentTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
-    await chrome.storage.local.set({ theme: currentTheme });
+    await ext.storage.local.set({ theme: currentTheme });
   }
 
   async function changeFontSize(delta) {
     currentFontSize = Math.max(12, Math.min(28, currentFontSize + delta));
     document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
     fontSizeDisplay.textContent = currentFontSize + 'px';
-    await chrome.storage.local.set({ fontSize: currentFontSize });
+    await ext.storage.local.set({ fontSize: currentFontSize });
   }
 
   // Theme and font size event listeners
@@ -169,7 +168,7 @@
   // Article loading
   async function loadArticle() {
     try {
-      const data = await chrome.storage.local.get(["currentArticle", "extractedAt"]);
+      const data = await ext.storage.local.get(["currentArticle", "extractedAt"]);
       
       if (!data.currentArticle) {
         showEmptyState();
@@ -319,7 +318,7 @@
       content = metadata + content;
 
       // Get custom tags
-      const tagData = await chrome.storage.local.get("customTags");
+      const tagData = await ext.storage.local.get("customTags");
       const customTags = tagData.customTags || getDefaultTags();
 
       // Create Nostr event
@@ -347,7 +346,7 @@
       console.log("Signed event:", signedEvent);
 
       // Get relays
-      const relayData = await chrome.storage.local.get("relays");
+      const relayData = await ext.storage.local.get("relays");
       const relays = relayData.relays || getDefaultRelays();
 
       // Post to relays
@@ -441,7 +440,7 @@
       delBtn.textContent = "Remove";
       delBtn.onclick = async () => {
         relays.splice(i, 1);
-        await chrome.storage.local.set({ relays });
+        await ext.storage.local.set({ relays });
         renderRelays(relays);
       };
       li.appendChild(delBtn);
@@ -463,7 +462,7 @@
       delBtn.textContent = "Remove";
       delBtn.onclick = async () => {
         tags.splice(i, 1);
-        await chrome.storage.local.set({ customTags: tags });
+        await ext.storage.local.set({ customTags: tags });
         renderTags(tags);
       };
       li.appendChild(delBtn);
@@ -473,14 +472,14 @@
   }
 
   async function loadRelays() {
-    const data = await chrome.storage.local.get("relays");
+    const data = await ext.storage.local.get("relays");
     const relays = data.relays || getDefaultRelays();
     renderRelays(relays);
     return relays;
   }
 
   async function loadTags() {
-    const data = await chrome.storage.local.get("customTags");
+    const data = await ext.storage.local.get("customTags");
     const tags = data.customTags || getDefaultTags();
     renderTags(tags);
     return tags;
@@ -488,7 +487,7 @@
 
   async function resetTagsToDefault() {
     const defaultTags = getDefaultTags();
-    await chrome.storage.local.set({ customTags: defaultTags });
+    await ext.storage.local.set({ customTags: defaultTags });
     renderTags(defaultTags);
     return defaultTags;
   }
@@ -502,7 +501,7 @@
       return;
     }
 
-    const data = await chrome.storage.local.get("relays");
+    const data = await ext.storage.local.get("relays");
     const relays = data.relays || getDefaultRelays();
     
     if (relays.includes(url)) {
@@ -511,7 +510,7 @@
     }
 
     relays.push(url);
-    await chrome.storage.local.set({ relays });
+    await ext.storage.local.set({ relays });
     renderRelays(relays);
     newRelayInput.value = "";
   });
@@ -527,7 +526,7 @@
     const tag = newTagInput.value.trim();
     if (!tag) return;
     
-    const data = await chrome.storage.local.get("customTags");
+    const data = await ext.storage.local.get("customTags");
     const tags = data.customTags || getDefaultTags();
     
     if (tags.includes(tag)) {
@@ -536,7 +535,7 @@
     }
 
     tags.push(tag);
-    await chrome.storage.local.set({ customTags: tags });
+    await ext.storage.local.set({ customTags: tags });
     renderTags(tags);
     newTagInput.value = "";
   });

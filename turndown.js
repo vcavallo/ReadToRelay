@@ -1,7 +1,11 @@
 var TurndownService = (() => {
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
   };
 
   // node_modules/turndown/lib/turndown.browser.umd.js
@@ -9,7 +13,7 @@ var TurndownService = (() => {
     "node_modules/turndown/lib/turndown.browser.umd.js"(exports, module) {
       (function(global, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.TurndownService = factory());
-      })(exports, function() {
+      })(exports, (function() {
         "use strict";
         function extend(destination) {
           for (var i = 1; i < arguments.length; i++) {
@@ -748,7 +752,7 @@ var TurndownService = (() => {
           return input != null && (typeof input === "string" || input.nodeType && (input.nodeType === 1 || input.nodeType === 9 || input.nodeType === 11));
         }
         return TurndownService;
-      });
+      }));
     }
   });
   return require_turndown_browser_umd();

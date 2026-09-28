@@ -1,16 +1,24 @@
 {
   "name": "nostr-reader",
   "version": "1.0.0",
-  "main": "popup.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node scripts/build.js",
+    "package": "npm run build && npm run package:chrome && npm run package:firefox",
+    "package:chrome": "web-ext build --source-dir dist/chrome --artifacts-dir dist --filename readtorelay-chrome-v{version}.zip --overwrite-dest",
+    "package:firefox": "web-ext build --source-dir dist/firefox --artifacts-dir dist --filename readtorelay-firefox-v{version}.zip --overwrite-dest",
+    "lint:firefox": "npm run build && web-ext lint --source-dir dist/firefox",
+    "vendor": "node scripts/vendor.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "nostr-tools": "^2.16.2",
-    "turndown": "^7.2.0"
+    "nostr-tools": "2.16.2",
+    "turndown": "7.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "web-ext": "^10.4.0"
   }
 }
