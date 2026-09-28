@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ReadToRelay",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Extract reader mode content and post to Nostr as longform markdown",
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
