@@ -1,0 +1,35 @@
+{
+  "name": {
+    "en-US": "ReadToRelay"
+  },
+  "summary": {
+    "en-US": "Read any web page in a clean reader view, then publish it to Nostr as long-form Markdown signed with your own key. Your secret key never leaves your device."
+  },
+  "description": {
+    "en-US": "ReadToRelay extracts the readable content of a web page and lets you publish it to Nostr as long-form Markdown (kind 30023), signed with your own nsec.\n\nHow it works:\n\n1. Click the ReadToRelay toolbar button on any article, blog post, or documentation page.\n2. Read the extracted content in a clean, distraction-free reader view with dark mode and adjustable font size.\n3. Log in with your nsec (stored locally in your browser only).\n4. Click \"Post to Nostr\". The article is converted to Markdown, given the appropriate long-form tags, and broadcast to the relays you choose.\n\nFeatures:\n\n- Clean reader view with light and dark themes and adjustable font size\n- HTML to Markdown conversion\n- Configurable relay list and post tags\n- Your nsec is stored locally and only used to sign events on your device\n- Posts include the original source URL, title, byline, and a link back to the project\n\nReadToRelay is open source under the Unlicense: https://github.com/vcavallo/ReadToRelay"
+  },
+  "categories": {
+    "firefox": [
+      "social-communication"
+    ]
+  },
+  "homepage": {
+    "en-US": "https://github.com/vcavallo/ReadToRelay"
+  },
+  "support_email": {
+    "en-US": "hi@vinneycavallo.com"
+  },
+  "support_url": {
+    "en-US": "https://github.com/vcavallo/ReadToRelay/issues"
+  },
+  "developer_comments": {
+    "en-US": "ReadToRelay is a Manifest V3 extension. It vendors three libraries at the repository root (nostr-tools, turndown, and Mozilla's Readability), so a source package is included with this submission.\n\nReviewers: run `npm ci && npm run vendor` (Node 22+) in the uploaded source to regenerate all three vendored files byte-for-byte:\n- nostr-tools.js — verbatim copy of lib/nostr.bundle.js from the nostr-tools@2.16.2 npm package\n- turndown.js — lib/turndown.browser.umd.js from turndown@7.2.0, wrapped as an IIFE global by esbuild@0.28.1 (exact command in scripts/vendor.js)\n- readability.js — verbatim copy of Readability.js from mozilla/readability @ a07e62c8abfc64b06a28b48dfc76f4150796ed63\n\n`npm run build` then assembles dist/firefox (this package) and dist/chrome from the same source; only the manifest differs. No remote code is loaded at runtime: all scripts are bundled in the package. The only network activity is WebSocket connections to the Nostr relays the user configures, and only when the user clicks \"Post to Nostr\"."
+  },
+  "version": {
+    "license": "Unlicense",
+    "release_notes": {
+      "en-US": "Initial release."
+    },
+    "approval_notes": "This is the first public listing of ReadToRelay on AMO.\n\nWHAT IT DOES\nThe extension extracts the readable content of the current tab using Mozilla's Readability, shows it in a local reader page, converts it to Markdown, and — only when the user clicks \"Post to Nostr\" — signs a Nostr long-form event (kind 30023) with the user's own key and sends it to the Nostr relays the user has configured.\n\nVENDORED / GENERATED CODE (source package attached)\nThree libraries are generated/vendored at the repository root and are reproduced by `npm ci && npm run vendor`:\n- nostr-tools.js — verbatim copy of lib/nostr.bundle.js from nostr-tools@2.16.2\n- turndown.js — turndown@7.2.0 browser UMD build wrapped as an IIFE global by esbuild@0.28.1 (command in scripts/vendor.js)\n- readability.js — verbatim copy of Readability.js from mozilla/readability @ a07e62c8abfc64b06a28b48dfc76f4150796ed63\nAll three are pinned; package-lock.json is included. No obfuscation, and no remote code is fetched at runtime.\n\nDATA COLLECTION\nAs declared in the manifest, the extension transmits websiteContent and browsingActivity, but only as a direct, immediate consequence of the user clicking \"Post to Nostr\", and only to the Nostr relays the user has chosen. Nothing is transmitted in the background. The user's nsec is stored locally and is only used to sign events on-device.\n\nTESTING\n1. Open any article page (for example a Wikipedia or blog post).\n2. Click the toolbar button. A reader tab opens with the extracted article.\n3. Enter an nsec to log in (any key works for testing; nothing is posted until you click Post).\n4. Click \"Post to Nostr\" and confirm the status line reports how many relays accepted the event.\nNo login to a third-party service is required."
+  }
+}
