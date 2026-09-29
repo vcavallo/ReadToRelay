@@ -180,7 +180,7 @@
     extractStatus.className = "info-message";
 
     // Use a CORS proxy to fetch the page
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
 
     const response = await fetch(proxyUrl);
     if (!response.ok) {
@@ -361,6 +361,7 @@
         created_at: timestamp,
         tags: [
           ["d", `${currentArticle.url}-${timestamp}`],
+          ["r", currentArticle.url],
           ["title", currentArticle.title || "Untitled"],
           ["url", currentArticle.url || ""],
           ["published_at", String(timestamp)],
